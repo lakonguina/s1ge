@@ -65,6 +65,7 @@ services:
       - app_network
     volumes:
       - ./worker:/worker
+      - ./database:/database
 
 volumes:
   postgres_data:

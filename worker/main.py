@@ -8,17 +8,17 @@ import os
 from celery import Celery
 
 # Import tasks from their respective modules
-from src.transactions import get_transactions
+from src.transactions import get_declarations
 
 app = Celery('worker', broker=os.getenv("REDIS_URL"))
 
 # Register Celery tasks
-app.task(get_transactions)
+app.task(get_declarations)
 
 # Configure Celery beat schedule
 app.conf.beat_schedule = {
-    'get-transactions': {
-        'task': 'src.transactions.get_transactions',
+    'get-declarations': {
+        'task': 'src.transactions.get_declarations',
         'schedule': 30.0
     },
 }
