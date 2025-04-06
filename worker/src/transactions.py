@@ -9,7 +9,7 @@ from sqlmodel import Session, func, select
 from src.parse import extractor
 from database.model import Declaration
 from database.engine import engine
-
+from src.quotes import get_quotes
 
 
 def get_latest_transaction_date() -> datetime.date:
@@ -95,3 +95,4 @@ def get_declarations() -> None:
         # Move to the next year
         start_date = end_datetime.date()
     print("Fetched all declarations.")
+    #get_quotes()

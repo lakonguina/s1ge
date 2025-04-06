@@ -1,4 +1,5 @@
 from sqlmodel import SQLModel, Field, Relationship
+from sqlalchemy import UniqueConstraint
 from datetime import date
 
 
@@ -9,6 +10,7 @@ class Company(SQLModel, table=True):
     isin: str | None = Field(default=None)
     ticker: str | None = Field(default=None)
 
+    quotes: list["Quote"] = Relationship(back_populates="company")
     persons: list["Person"] = Relationship(back_populates="companies")
     transactions: list["Transaction"] = Relationship(back_populates="company")
 
@@ -90,3 +92,24 @@ class Transaction(SQLModel, table=True):
     transaction_place: TransactionPlace = Relationship(back_populates="transactions")
     transaction_instrument: TransactionInstrument = Relationship(back_populates="transactions")
     declaration: Declaration = Relationship(back_populates="transactions")
+
+
+class Quote(SQLModel, table=True):
+    __tablename__ = "quote"
+    id_quote: int | None = Field(default=None, primary_key=True)
+    id_company: int = Field(foreign_key="companies.id_company")
+    date_: date | None = Field(default=None)
+    open: float | None = Field(default=None)
+    high: float | None = Field(default=None)
+    low: float | None = Field(default=None)
+    close: float | None = Field(default=None)
+    volume: float | None = Field(default=None)
+    dividends: float | None = Field(default=None)
+    stock_splits: float | None = Field(default=None)
+    
+    # Add unique constraint on date_ and id_company
+    __table_args__ = (
+        UniqueConstraint('date_', 'id_company', name='unique_company_date'),
+    )
+
+    company: Company = Relationship(back_populates="quotes")

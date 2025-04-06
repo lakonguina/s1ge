@@ -19,6 +19,6 @@ app.task(get_declarations)
 app.conf.beat_schedule = {
     'get-declarations': {
         'task': 'src.transactions.get_declarations',
-        'schedule': 30.0
+        'schedule': 86400.0
     },
 }
