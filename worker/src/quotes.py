@@ -127,5 +127,5 @@ def get_cac40_quotes():
             print(f"Error fetching {cac40.ticker}: {e}")
 
 if __name__ == "__main__":
-    #get_quotes()
-    #get_cac40_quotes()
+    get_quotes()
+    get_cac40_quotes()

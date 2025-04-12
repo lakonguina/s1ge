@@ -12,6 +12,7 @@ from src.transactions import get_declarations
 
 app = Celery('worker', broker=os.getenv("REDIS_URL"))
 
+"""
 # Register Celery tasks
 app.task(get_declarations)
 
@@ -22,3 +23,4 @@ app.conf.beat_schedule = {
         'schedule': 86400.0
     },
 }
+"""

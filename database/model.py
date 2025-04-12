@@ -95,7 +95,7 @@ class Transaction(SQLModel, table=True):
 
 
 class Quote(SQLModel, table=True):
-    __tablename__ = "quote"
+    __tablename__ = "quotes"
     id_quote: int | None = Field(default=None, primary_key=True)
     id_company: int = Field(foreign_key="companies.id_company")
     date_: date | None = Field(default=None)
@@ -107,7 +107,6 @@ class Quote(SQLModel, table=True):
     dividends: float | None = Field(default=None)
     stock_splits: float | None = Field(default=None)
     
-    # Add unique constraint on date_ and id_company
     __table_args__ = (
         UniqueConstraint('date_', 'id_company', name='unique_company_date'),
     )

@@ -91,8 +91,11 @@ def get_declarations() -> None:
                 document_content = get_document(document['path'])
                 with Session(engine) as session:
                     extractor(document_content, session)
-                time.sleep(1)
+                time.sleep(0.5)
         # Move to the next year
         start_date = end_datetime.date()
     print("Fetched all declarations.")
     #get_quotes()
+
+if __name__ == "__main__":
+    get_declarations()
