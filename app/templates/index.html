@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dinitie</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <h1>Dinitie</h1>
+    <h2>Insider Purchases vs CAC 40</h2>
+    <canvas id="returnsChart" width="800" height="400"></canvas>
+
+    <script>
+        const insiderData = [
+            {% for return in insider_purchases %}
+                { date: "{{ return.date_ }}", value: {{ return.cumulative_return }} },
+            {% endfor %}
+        ];
+        const cac40Data = [
+            {% for return in cac40 %}
+                { date: "{{ return.date_ }}", value: {{ return.cumulative_return }} },
+            {% endfor %}
+        ];
+
+        const allDates = [...new Set([
+            ...insiderData.map(d => d.date),
+            ...cac40Data.map(d => d.date)
+        ])].sort();
+
+        const insiderReturns = allDates.map(date => {
+            const entry = insiderData.find(d => d.date === date);
+            return entry ? entry.value : null;
+        });
+        const cac40Returns = allDates.map(date => {
+            const entry = cac40Data.find(d => d.date === date);
+            return entry ? entry.value : null;
+        });
+
+        const ctx = document.getElementById('returnsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: allDates,
+                datasets: [
+                    {
+                        label: 'Insider Purchases',
+                        data: insiderReturns,
+                        borderColor: 'blue',
+                        fill: false,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'CAC 40',
+                        data: cac40Returns,
+                        borderColor: 'orange',
+                        fill: false,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Date' } },
+                    y: { title: { display: true, text: 'Cumulative Return' } }
+                },
+                plugins: { legend: { display: true } }
+            }
+        });
+    </script>
+</body>
+</html>
