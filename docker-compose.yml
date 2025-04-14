@@ -81,6 +81,8 @@ services:
     volumes:
       - .:/app
     restart: always
+    networks:
+      - app_network
       
 
 volumes:
