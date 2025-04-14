@@ -67,6 +67,22 @@ services:
       - ./worker:/worker
       - ./database:/database
 
+  app:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    ports:
+      - 8000:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    restart: always
+      
+
 volumes:
   postgres_data:
   redis_data:
