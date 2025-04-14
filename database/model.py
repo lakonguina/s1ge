@@ -1,7 +1,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 from sqlalchemy import UniqueConstraint
 from datetime import date
-
+from enum import Enum
 
 class Company(SQLModel, table=True):
     __tablename__ = "companies"
@@ -112,3 +112,34 @@ class Quote(SQLModel, table=True):
     )
 
     company: Company = Relationship(back_populates="quotes")
+
+
+class Strategy(SQLModel, table=True):
+    __tablename__ = "strategies"
+    id_strategy: int | None = Field(default=None, primary_key=True)
+    name: str = Field(default=None)
+
+    transactions: list["Transaction"] = Relationship(back_populates="strategy")
+
+
+class TransactionNature(Enum):
+    BUY = "BUY"
+    SELL = "SELL"
+
+
+class StrategyTransaction(SQLModel, table=True):
+    __tablename__ = "strategy_transactions"
+    id_strategy_transaction: int | None = Field(default=None, primary_key=True)
+    id_strategy: int = Field(foreign_key="strategies.id_strategy")
+    nature: TransactionNature | None = Field(default=None)
+    date_: date | None = Field(default=None)
+    conviction_score: float | None = Field(default=None)
+
+
+class StrategyReturn(SQLModel, table=True):
+    __tablename__ = "strategy_returns"
+    id_strategy_return: int | None = Field(default=None, primary_key=True)
+    id_strategy: int = Field(foreign_key="strategies.id_strategy")
+    date_: date | None = Field(default=None)
+    return_: float | None = Field(default=None)
+    cumulative_return: float | None = Field(default=None)
