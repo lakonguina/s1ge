@@ -3,6 +3,7 @@ from sqlalchemy import UniqueConstraint
 from datetime import date
 from enum import Enum
 
+
 class Company(SQLModel, table=True):
     __tablename__ = "companies"
     id_company: int | None = Field(default=None, primary_key=True)
@@ -92,6 +93,7 @@ class Transaction(SQLModel, table=True):
     transaction_place: TransactionPlace = Relationship(back_populates="transactions")
     transaction_instrument: TransactionInstrument = Relationship(back_populates="transactions")
     declaration: Declaration = Relationship(back_populates="transactions")
+    
 
 
 class Quote(SQLModel, table=True):
@@ -119,10 +121,11 @@ class Strategy(SQLModel, table=True):
     id_strategy: int | None = Field(default=None, primary_key=True)
     name: str = Field(default=None)
 
-    transactions: list["Transaction"] = Relationship(back_populates="strategy")
+    strategy_transactions: list["StrategyTransaction"] = Relationship(back_populates="strategy")
+    strategy_returns: list["StrategyReturn"] = Relationship(back_populates="strategy")
 
 
-class TransactionNature(Enum):
+class StrategyTransactionNature(Enum):
     BUY = "BUY"
     SELL = "SELL"
 
@@ -131,9 +134,11 @@ class StrategyTransaction(SQLModel, table=True):
     __tablename__ = "strategy_transactions"
     id_strategy_transaction: int | None = Field(default=None, primary_key=True)
     id_strategy: int = Field(foreign_key="strategies.id_strategy")
-    nature: TransactionNature | None = Field(default=None)
+    nature: StrategyTransactionNature | None = Field(default=None)
     date_: date | None = Field(default=None)
     conviction_score: float | None = Field(default=None)
+
+    strategy: Strategy = Relationship(back_populates="strategy_transactions")
 
 
 class StrategyReturn(SQLModel, table=True):
@@ -143,3 +148,5 @@ class StrategyReturn(SQLModel, table=True):
     date_: date | None = Field(default=None)
     return_: float | None = Field(default=None)
     cumulative_return: float | None = Field(default=None)
+
+    strategy: Strategy = Relationship(back_populates="strategy_returns")
