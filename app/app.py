@@ -46,7 +46,7 @@ def index(request: Request, session: Session = Depends(get_session)):
     )
     """
     return templates.TemplateResponse(
-        "rindex.html",
+        "index.html",
         {
             "request": request,
         }

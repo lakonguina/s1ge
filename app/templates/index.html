@@ -1,71 +1,105 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dinitie</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-</head>
-<body>
-    <h1>Dinitie</h1>
-    <h2>Insider Purchases vs CAC 40</h2>
-    <canvas id="returnsChart" width="800" height="400"></canvas>
+{% extends "base.html" %}
 
-    <script>
-        const insiderData = [
-            {% for return in insider_purchases %}
-                { date: "{{ return.date_ }}", value: {{ return.cumulative_return }} },
-            {% endfor %}
-        ];
-        const cac40Data = [
-            {% for return in cac40 %}
-                { date: "{{ return.date_ }}", value: {{ return.cumulative_return }} },
-            {% endfor %}
-        ];
+{% block content %}
+<section class="container mt-5 mb-5 text-center">
+    <h2>Surperforme le marché avec une stratégie basée sur les données.</h2>
+    <p>Suit les forces qui font le marché, délègue les tâches à la stratégie, surperforme le marché. Conçu pour les
+        investisseurs occupés.</p>
+    <a href="/strategies">
+        <button class="btn bg-black">Explore les stratégies <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M5 12h13M12 5l7 7-7 7" />
+            </svg></button>
+    </a </div>
+</section>
+<section class="container">
+    <h2 class="text-center">Arrete de vouloir faire tout par toi-même. Il y a un moyen <span class="text-green">plus
+            intelligent</span>.</h2>
+    <div class="row mt-5">
+        <div class="col-md-6 p-5 bg-light">
+            <h3>Investi avec <span class="text-green">s1ge</span></h3>
+            <div class="d-flex gap-3 mt-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a10 10 0 1 0 10 10H12V2zM21.18 8.02c-1-2.3-2.85-4.17-5.16-5.18" />
+                </svg>
+                <div>
+                    <h4>Un portefeuille mis à jour chaque semaine.</h4>
+                    <p>Tu as juste à copier le portefeuille chaque semaine.</p>
+                </div>
+            </div>
+            <div class="d-flex gap-3 mt-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M3 9h18" />
+                </svg>
+                <div>
+                    <h4>Ajuste la stratégie en temps réel</h4>
+                    <p>Un niveau de confiance est attribué à chaque achat. Tu peux donc ajuster la stratégie à tes
+                        besoins.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 p-5 bg-light">
+            <h3>Investi <span class="text-red">par toi-même</span></h3>
+            <ul class="mt-4 list-unstyled">
+                <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg> Une recherche fastidieuse des actions à acheter.</li>
+                <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg> Un manque de temps pour analyser les données.</li>
+                <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg> Un manque de connaissances pour prendre des décisions éclairées.</li>
+                <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg> Un manque de certitude pour suivre une stratégie.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+<section class="container">
+    <div class="text-center">
+        <h2>Plan et prix</h2>
+        <p>Les plans sur les nouveaux comptes incluent un essai gratuit de 7 jours</p>
+        <button class="btn bg-black">Commencez gratuitement</button>
+    </div>
+    <div class="row d-flex justify-content-center mt-3">
+        <div class="col-md-6 bg-light p-5">
+            <h3>30€/mois</h3>
+            <div>
 
-        const allDates = [...new Set([
-            ...insiderData.map(d => d.date),
-            ...cac40Data.map(d => d.date)
-        ])].sort();
-
-        const insiderReturns = allDates.map(date => {
-            const entry = insiderData.find(d => d.date === date);
-            return entry ? entry.value : null;
-        });
-        const cac40Returns = allDates.map(date => {
-            const entry = cac40Data.find(d => d.date === date);
-            return entry ? entry.value : null;
-        });
-
-        const ctx = document.getElementById('returnsChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: allDates,
-                datasets: [
-                    {
-                        label: 'Insider Purchases',
-                        data: insiderReturns,
-                        borderColor: 'blue',
-                        fill: false,
-                        tension: 0.1
-                    },
-                    {
-                        label: 'CAC 40',
-                        data: cac40Returns,
-                        borderColor: 'orange',
-                        fill: false,
-                        tension: 0.1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: { title: { display: true, text: 'Date' } },
-                    y: { title: { display: true, text: 'Cumulative Return' } }
-                },
-                plugins: { legend: { display: true } }
-            }
-        });
-    </script>
-</body>
-</html>
+                <span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="#57D7BA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg> Accès aux stratégies</span>
+                <br>
+                <small class="text-muted">Suit les performances et les positions des stratégies de trading backtestées
+                    basées sur les ensembles de données s1ge.</small>
+            </div>
+            <div class="mt-2">
+                <span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="#57D7BA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg> Accès aux alertes de changement de position</span>
+                <br>
+                <small class="text-muted">Soit le premier à savoir quand une stratégie change de position.</small>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="container text-center">
+    <h2>FAQ</h2>
+</section>
+{% endblock %}

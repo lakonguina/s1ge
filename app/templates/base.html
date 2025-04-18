@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="utf-8">
@@ -21,12 +21,41 @@
     * {
         font-family: 'Inter', sans-serif;
     }
+
+    .bg-black {
+        background-color: #000000;
+        color: white;
+    }
+
+    .bg-outline-black {
+        border-color: #000000;
+        color: #000000;
+    }
+
+    .bg-green {
+        background-color: #57D7BA;
+        color: white;
+    }
+
+    .text-green {
+        color: #57D7BA;
+    }
+
+    .text-red {
+        color: #FF4500;
+    }
+
+    .btn {
+        border-radius: 2px;
+        font-weight: 600;
+    }
 </style>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="#">Dinitie</a>
+            <img src="{{ url_for('static', path='/logo.png') }}" alt="Dinitie" class="navbar-brand"
+                style="width: 100px;">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
                 aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -34,26 +63,126 @@
             <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
                 <ul class="navbar-nav me-auto ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Stratégies</a>
+                        <a class="nav-link active" href="#"><strong>Stratégies</strong></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Prix</a>
+                        <a class="nav-link active" href="#"><strong>Prix</strong></a>
                     </li>
                 </ul>
                 <form class="d-flex" role="search">
                     <a href="/login" class="nav-link">
-                        <button class="btn btn-outline-primary" type="submit">Se connecter</button>
+                        <button class="btn bg-outline-black" type="submit">Se connecter</button>
                     </a>
                     <a href="/signup" class="nav-link ms-2">
-                        <button class="btn btn-primary" type="submit">S'inscrire</button>
+                        <button class="btn bg-green" type="submit">Commencez gratuitement</button>
                     </a>
                 </form>
             </div>
         </div>
     </nav>
     {% block content %}{% endblock %}
-    <footer class="container">
-        <p>Dinitie 2025</p>
+    <footer class="bg-light py-5">
+        <div class="container">
+            <p><strong>s1ge</strong></p>
+            <small class="text-muted">@ 2025</small>
+            <hr>
+            <div class="row">
+                <div class="col-md-4">
+                    <p><strong>Société</strong></p>
+                    <p class="text-muted">X</p>
+                    <p class="text-muted">LinkedIn</p>
+                    <p class="text-muted">Nous contacter</p>
+                    <p class="text-muted">Manifeste</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Légal</strong></p>
+                    <p class="text-muted">Clause de non-responsabilité</p>
+                    <p class="text-muted">Conditions d'utilisation</p>
+                    <p class="text-muted">Politique de confidentialité</p>
+                </div>
+            </div>
+            <div class="mt-5">
+                <small><strong class="text-muted">Clause de non-responsabilité</strong></small>
+            </div>
+
+            <div class="mt-3">
+                <small><strong class="text-muted">Informations importantes</strong></small>
+                <br>
+                <small>Les informations fournies sur ce site web et dans l'application Autopilot sont à titre informatif
+                    uniquement. Autopilot Holdings Corporation ("Autopilot Holdings") n'est pas un conseiller en
+                    investissement et ne fournit pas de conseils en investissement. Les conseils fournis sur ce site web
+                    et
+                    via l'application Autopilot sont générés et gérés par Autopilot Advisers, LLC ("Autopilot Advisers"
+                    ;
+                    ensemble avec Autopilot Holdings, "Autopilot"), qui est un conseiller en investissement enregistré
+                    auprès de la Securities and Exchange Commission (SEC).</small>
+            </div>
+
+            <div class="mt-3">
+                <small><strong class="text-muted">Conseils en investissement</strong></small>
+                <br>
+                <small>Tous les conseils en investissement, stratégies ou recommandations présentées sur ce site web ou
+                    via
+                    l'application Autopilot sont fournis uniquement par Autopilot Advisers. Autopilot Holdings ne
+                    fournit
+                    pas de conseils en investissement et n'est pas responsable de l'exactitude, de l'exhaustivité ou de
+                    la
+                    ponctualité de tout conseil en investissement donné par Autopilot Advisers.</small>
+            </div>
+
+            <div class="mt-3">
+                <small><strong class="text-muted">Risques liés aux investissements</strong></small>
+                <small>L'investissement dans des valeurs mobilières comporte des risques importants, y compris le risque
+                    de
+                    perte en capital. La performance passée ne garantit pas les résultats futurs, et il n'y a aucune
+                    certitude qu'une stratégie d'investissement ou une valeur mobilière atteindra ses objectifs ou
+                    obtiendra
+                    un résultat financier spécifique. Vous ne devez investir que des fonds risqués que vous pouvez vous
+                    permettre de perdre sans nuire à votre stabilité financière. Vous devez soigneusement considérer
+                    votre
+                    situation financière personnelle, vos objectifs d'investissement et votre tolérance au risque avant
+                    de
+                    prendre toute décision d'investissement.</p>
+            </div>
+
+            <div class="mt-3">
+                <small><strong class="text-muted">Consulter des professionnels</strong></small>
+                <br>
+                <small>Vous devez consulter un conseiller financier qualifié, un avocat ou un professionnel de la fiscalité
+                    concernant votre situation financière personnelle, vos objectifs d'investissement et les éventuelles
+                    implications juridiques ou fiscales avant de prendre toute décision d'investissement. Autopilot ne
+                    fournit pas de conseils juridiques ou fiscaux.</small>
+            </div>
+
+            <div class="mt-3">
+                <small><strong class="text-muted">Limitation de responsabilité</strong></small>
+                <br>
+                <small>Autopilot, ses affiliés et employés déclinent toute responsabilité pour toute perte ou dommage résultant
+                    des actions entreprises ou de la confiance accordée aux informations fournies sur ce site web ou via
+                    l'application Autopilot. Cela inclut, mais sans s'y limiter, les pertes liées à l'achat ou à la vente de
+                    valeurs mobilières ou d'autres instruments financiers, les changements dans les conditions du marché ou
+                    tout autre résultat d'investissement.</small>
+            </div>
+
+            <div class="mt-3">
+                <small><strong class="text-muted">Absence de garanties</strong></small>
+                <br>
+                <small>Aucune représentation n'est faite quant au fait qu'une stratégie d'investissement, une valeur mobilière
+                    ou un produit financier discuté sur ce site web ou via l'application Autopilot sera rentable ou adapté à
+                    un individu particulier. Le contenu fourni est basé sur des sources considérées comme fiables mais n'est
+                    pas garanti d'être exact, complet ou à jour.</small>
+            </div>
+
+            <div class="mt-3">
+                <small><strong class="text-muted">Divulgation des affiliations</strong></small>
+                <br>
+                <small>Autopilot peut avoir des affiliations avec d'autres institutions financières ou services, ce qui peut
+                    affecter le contenu présenté ou les recommandations fournies par Autopilot Advisers. Veuillez consulter
+                le formulaire ADV Part 2A d'Autopilot Advisers, disponible ici, pour des informations détaillées sur
+                leurs services, leurs frais et les éventuels conflits d'intérêts. Pour plus d'informations sur Autopilot
+                Advisers, consultez nos documents d'enregistrement auprès de la SEC ici.</small>
+            </div>
+        </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
