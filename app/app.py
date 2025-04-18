@@ -2,6 +2,7 @@ from fastapi import Depends, FastAPI, Request
 from sqlmodel import create_engine, Session, select
 from database.model import StrategyReturn, Strategy, StrategyTransaction
 from database.model import Strategy
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import os
 from pathlib import Path
@@ -10,6 +11,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 
+static_dir = os.path.join(BASE_DIR, "static")
 engine = create_engine("postgresql://dinitie:dinitie@postgres:5432/dinitie")
 
 def get_session():
@@ -19,10 +21,11 @@ def get_session():
 
 app = FastAPI()
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
-
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 @app.get("/")
 def index(request: Request, session: Session = Depends(get_session)):
+    """
     strategy_returns = session.exec(
         select(StrategyReturn)
         .join(Strategy)
@@ -39,5 +42,12 @@ def index(request: Request, session: Session = Depends(get_session)):
             "request": request,
             "insider_purchases": strategy_returns,
             "cac40": cac40_returns
+        }
+    )
+    """
+    return templates.TemplateResponse(
+        "rindex.html",
+        {
+            "request": request,
         }
     )

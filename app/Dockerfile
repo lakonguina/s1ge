@@ -7,4 +7,4 @@ RUN python -m pip install "fastapi[standard]" sqlmodel psycopg2-binary
 
 COPY . .
 
-CMD fastapi dev app/app.py --host 0.0.0.0
+CMD fastapi dev app/app.py --host 0.0.0.0 --port 8000
