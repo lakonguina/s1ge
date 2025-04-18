@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="container mt-5 mb-5 text-center">
+<section class="container text-center">
     <h2>Surperforme le marché avec une stratégie basée sur les données.</h2>
     <p>Suit les forces qui font le marché, délègue les tâches à la stratégie, surperforme le marché. Conçu pour les
         investisseurs occupés.</p>
@@ -11,7 +11,18 @@
                 stroke-linejoin="round">
                 <path d="M5 12h13M12 5l7 7-7 7" />
             </svg></button>
-    </a </div>
+    </a>
+    <div class="row justify-content-center mt-5">
+        <div class="col-3">
+            <img src="{{ url_for('static', path='phone1.jpg') }}" alt="Stratégie" class="img-fluid">
+        </div>
+        <div class="col-3 pt-5">
+            <img src="{{ url_for('static', path='phone2.jpg') }}" alt="Stratégie" class="img-fluid">
+        </div>
+        <div class="col-3">
+            <img src="{{ url_for('static', path='phone3.jpg') }}" alt="Stratégie" class="img-fluid">
+        </div>
+    </div>
 </section>
 <section class="container">
     <h2 class="text-center">Arrete de vouloir faire tout par toi-même. Il y a un moyen <span class="text-green">plus
@@ -99,7 +110,59 @@
         </div>
     </div>
 </section>
-<section class="container text-center">
-    <h2>FAQ</h2>
+<section class="container">
+    <h2 class="text-center">FAQ</h2>
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-6">
+            <div class="accordion" id="accordionPanelsStayOpenExample">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+                            aria-controls="panelsStayOpen-collapseOne">
+                            <strong>Comment la souscription gratuite fonctionne ?</strong>
+                        </button>
+                    </h2>
+                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <p>Tu as 7 jours pour tester la stratégie gratuite. Si tu aimes, tu peux souscrire à la
+                                stratégie.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false"
+                            aria-controls="panelsStayOpen-collapseTwo">
+                            <strong>Est-ce que je peux annuler ma souscription à tout moment ?</strong>
+                        </button>
+                    </h2>
+                    <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <p>Oui, tu peux annuler ta souscription à tout moment. Il n'y a pas de frais de résiliation.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false"
+                            aria-controls="panelsStayOpen-collapseThree">
+                            <strong>Ou est-ce que je peux en apprendre plus sur les stratégies ?</strong>
+                        </button>
+                    </h2>
+                    <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <p>Tu peux en apprendre plus sur les stratégies sur la page <a href="/strategies">Stratégies</a>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 {% endblock %}
