@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="container">
+    <h1>Stratégies</h1>
+    {% for strategy in strategies %}
+        <a href="{{ url_for('strategy', slug=strategy.slug) }}">{{ strategy.name }}</a>
+    {% endfor %}
+</section>
+{% endblock %}

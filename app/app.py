@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 import os
 from pathlib import Path
 
-# Set up the correct templates directory path
+
 BASE_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 
@@ -24,30 +24,45 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 @app.get("/")
-def index(request: Request, session: Session = Depends(get_session)):
-    """
+def index(request: Request):
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+        }
+    )
+
+@app.get("/strategies")
+def strategies(request: Request, session: Session = Depends(get_session)):
+    strategies = session.exec(
+        select(Strategy)
+        .where(Strategy.id_strategy != 2)
+    ).all()
+    return templates.TemplateResponse(
+        "strategies.html",
+        {"request": request, "strategies": strategies}
+    )
+
+@app.get("/strategies/{slug}")
+def strategy(slug: str, request: Request, session: Session = Depends(get_session)):
+    strategy = session.exec(
+        select(Strategy)
+        .where(Strategy.slug == slug)
+    ).first()
     strategy_returns = session.exec(
         select(StrategyReturn)
-        .join(Strategy)
-        .where(Strategy.name == "Insider Purchases")
+        .where(StrategyReturn.id_strategy == strategy.id_strategy)
     ).all()
     cac40_returns = session.exec(
         select(StrategyReturn)
-        .join(Strategy)
-        .where(Strategy.name == "CAC 40")
+        .where(StrategyReturn.id_strategy == 2)
     ).all()
     return templates.TemplateResponse(
-        "index.html",
+        "strategy.html",
         {
             "request": request,
-            "insider_purchases": strategy_returns,
+            "strategy": strategy,
+            "strategy_returns": strategy_returns,
             "cac40": cac40_returns
-        }
-    )
-    """
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
         }
     )

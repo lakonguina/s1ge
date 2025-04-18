@@ -3,7 +3,7 @@ FROM python:3.11
 WORKDIR /app
 COPY database /database
 
-RUN python -m pip install "fastapi[standard]" sqlmodel psycopg2-binary
+RUN python -m pip install "fastapi[standard]" sqlmodel psycopg2-binary slugify
 
 COPY . .
 
