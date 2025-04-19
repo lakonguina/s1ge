@@ -4,30 +4,17 @@ from database.model import StrategyReturn, Strategy, StrategyTransaction, Strate
 from database.model import Company, Transaction
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from babel.dates import format_date
 import os
 from pathlib import Path
 from datetime import datetime, timedelta
 import locale
 
-# Configuration de la locale française
-try:
-    locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
-except:
-    try:
-        locale.setlocale(locale.LC_TIME, 'fr_FR')
-    except:
-        pass  # Fallback to default locale if French is not available
-
-# Fonction pour formater les dates en français
 def format_date_fr(date_obj):
-    if not date_obj:
-        return "Date inconnue"
-    
-    try:
-        # Format: "15 janvier 2023"
-        return date_obj.strftime("%d %B %Y").lower()
-    except:
-        return str(date_obj)  # Fallback si le formatage échoue
+    if isinstance(date_obj, str):
+        date_obj = datetime.strptime(date_obj, '%Y-%m-%d')
+    return format_date(date_obj, locale='fr')
+
 
 BASE_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")

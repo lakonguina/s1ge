@@ -5,69 +5,73 @@
 <div class="container my-5">
     <h1>{{ strategy.name }}</h1>
     <p>{{ strategy.description }}</p>
-    <p><strong>Commencé le {{ strategy_returns[0]['date_'] }}</strong></p>
-    <div class="row g-2">
+    <p><strong>Commencé le {{ format_date_fr(strategy_returns[0]['date_']) }}</strong></p>
+    <div class="row g-5">
         <div class="col-md-6">
             <sub><strong>Performance historique face au CAC 40</strong></sub>
             <div class="chart-container">
                 {{ macros.render_chart(
-                    chart_id='returnsChart',
-                    strategy_data=strategy_returns,
-                    cac40_data=cac40,
-                    strategy_name=strategy.name|safe,
-                    is_overview=false
+                chart_id='returnsChart',
+                strategy_data=strategy_returns,
+                cac40_data=cac40,
+                strategy_name=strategy.name|safe,
+                is_overview=false
                 ) }}
             </div>
         </div>
         <div class="col-md-6">
             <sub><strong>Positions Ouvertes</strong></sub>
-            <table class="table table-sm mt-2">
-                <thead>
-                    <tr>
-                        <th>Ticker</th>
-                        <th>Date d'entrée</th>
-                        <th>Conviction</th>
-                        <th>Jours détenus</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if open_positions %}
+            <div class="table-responsive">
+                <table class="table table-sm mt-2">
+                    <thead>
+                        <tr>
+                            <th>Ticker</th>
+                            <th>Date d'entrée</th>
+                            <th>Conviction</th>
+                            <th>Jours détenus</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if open_positions %}
                         {% for position in open_positions %}
                         <tr>
                             <td>{{ position.ticker }}</td>
                             <td>{{ format_date_fr(position.entry_date) }}</td>
                             <td>{{ position.conviction_score if position.conviction_score is not none else 'N/A' }}</td>
                             <td>
-                                <span class="badge {% if position.days_held > 60 %}bg-success{% elif position.days_held > 30 %}bg-warning{% else %}bg-info{% endif %}">
+                                <span
+                                    class="badge {% if position.days_held > 60 %}bg-success{% elif position.days_held > 30 %}bg-warning{% else %}bg-info{% endif %}">
                                     {{ position.days_held }} jours
                                 </span>
                             </td>
                         </tr>
                         {% endfor %}
-                    {% else %}
+                        {% else %}
                         <tr>
                             <td colspan="4" class="text-center">Aucune position ouverte</td>
                         </tr>
-                    {% endif %}
-                </tbody>
-            </table>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="col-md-12">
             <sub><strong>Transactions Complétées</strong></sub>
-            <table class="table table-sm mt-2">
-                <thead>
-                    <tr>
-                        <th>Ticker</th>
-                        <th>Entrée</th>
-                        <th>Sortie</th>
-                        <th>Durée</th>
-                        <th>Conviction</th>
-                        <th>Performance</th>
-                        <th>Statut</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if completed_trades %}
+            <div class="table-responsive">
+                <table class="table table-sm mt-2 w-100">
+                    <thead>
+                        <tr>
+                            <th>Société</th>
+                            <th>Entrée</th>
+                            <th>Sortie</th>
+                            <th>Durée</th>
+                            <th>Conviction</th>
+                            <th>Performance</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if completed_trades %}
                         {% for trade in completed_trades %}
                         <tr>
                             <td>{{ trade.ticker }}</td>
@@ -75,25 +79,27 @@
                             <td>{{ format_date_fr(trade.exit_date) }}</td>
                             <td>{{ trade.days_held }} jours</td>
                             <td>{{ trade.conviction_score if trade.conviction_score is not none else 'N/A' }}</td>
-                            <td class="{% if trade.return_value and trade.return_value > 0 %}text-success{% elif trade.return_value and trade.return_value < 0 %}text-danger{% endif %}">
+                            <td
+                                class="{% if trade.return_value and trade.return_value > 0 %}text-success{% elif trade.return_value and trade.return_value < 0 %}text-danger{% endif %}">
                                 {{ trade.return_value|round(2) if trade.return_value is not none else 'N/A' }}%
                             </td>
                             <td>
                                 {% if trade.is_open %}
-                                    <span class="badge bg-primary">Position ouverte</span>
+                                <span class="badge bg-primary">Position ouverte</span>
                                 {% else %}
-                                    <span class="badge bg-secondary">Clôturée</span>
+                                <span class="badge bg-secondary">Clôturée</span>
                                 {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
-                    {% else %}
+                        {% else %}
                         <tr>
                             <td colspan="7" class="text-center">Aucune transaction complétée</td>
                         </tr>
-                    {% endif %}
-                </tbody>
-            </table>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
