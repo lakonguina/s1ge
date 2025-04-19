@@ -1,13 +1,33 @@
 from fastapi import Depends, FastAPI, Request
-from sqlmodel import create_engine, Session, select
-from database.model import StrategyReturn, Strategy, StrategyTransaction
-from database.model import Strategy
+from sqlmodel import create_engine, Session, select, join
+from database.model import StrategyReturn, Strategy, StrategyTransaction, StrategyTransactionNature
+from database.model import Company, Transaction
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import os
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
+import locale
 
+# Configuration de la locale française
+try:
+    locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
+except:
+    try:
+        locale.setlocale(locale.LC_TIME, 'fr_FR')
+    except:
+        pass  # Fallback to default locale if French is not available
+
+# Fonction pour formater les dates en français
+def format_date_fr(date_obj):
+    if not date_obj:
+        return "Date inconnue"
+    
+    try:
+        # Format: "15 janvier 2023"
+        return date_obj.strftime("%d %B %Y").lower()
+    except:
+        return str(date_obj)  # Fallback si le formatage échoue
 
 BASE_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
@@ -155,6 +175,84 @@ def strategies(request: Request, session: Session = Depends(get_session)):
         {"request": request, "strategy_data": strategy_data}
     )
 
+def match_transactions(transactions):
+    """
+    Match BUY transactions with corresponding SELL transactions to create complete trades.
+    Also identify open positions (buys without sells).
+    """
+    if not transactions:
+        return [], []
+    
+    # Sort transactions by date
+    sorted_transactions = sorted(transactions, key=lambda x: x.date_ if x.date_ else datetime.min.date())
+    
+    # Separate buys and sells
+    buys = [tx for tx in sorted_transactions if tx.nature == StrategyTransactionNature.BUY]
+    sells = [tx for tx in sorted_transactions if tx.nature == StrategyTransactionNature.SELL]
+    
+    # Use a simpler matching logic - just pair buys and sells sequentially
+    completed_trades = []
+    open_positions = []
+    
+    # If we have both buys and sells, create pairs
+    i = 0
+    while i < len(buys) and i < len(sells):
+        buy = buys[i]
+        sell = sells[i]
+        
+        # Only match if sell date is after buy date
+        if buy.date_ and sell.date_ and sell.date_ > buy.date_:
+            days_held = (sell.date_ - buy.date_).days
+            
+            # Get ticker from company if available (handle different possible object structures)
+            ticker = None
+            if hasattr(buy, 'company') and buy.company:
+                ticker = getattr(buy.company, 'ticker', None) or getattr(buy.company, 'name', None)
+            elif hasattr(buy, 'security') and buy.security:
+                ticker = getattr(buy.security, 'ticker', None) or getattr(buy.security, 'name', None)
+            
+            if not ticker:
+                ticker = f"TX-{buy.id_strategy_transaction}"
+            
+            completed_trades.append({
+                "buy_transaction": buy,
+                "sell_transaction": sell,
+                "entry_date": buy.date_,
+                "exit_date": sell.date_,
+                "days_held": days_held,
+                "conviction_score": buy.conviction_score,
+                "return_value": sell.return_,
+                "ticker": ticker,
+                "is_open": False
+            })
+        i += 1
+    
+    # Remaining buys are open positions
+    for j in range(i, len(buys)):
+        buy = buys[j]
+        days_held = (datetime.now().date() - buy.date_).days if buy.date_ else 0
+        
+        # Get ticker from company if available (handle different possible object structures)
+        ticker = None
+        if hasattr(buy, 'company') and buy.company:
+            ticker = getattr(buy.company, 'ticker', None) or getattr(buy.company, 'name', None)
+        elif hasattr(buy, 'security') and buy.security:
+            ticker = getattr(buy.security, 'ticker', None) or getattr(buy.security, 'name', None)
+        
+        if not ticker:
+            ticker = f"TX-{buy.id_strategy_transaction}"
+        
+        open_positions.append({
+            "transaction": buy,
+            "entry_date": buy.date_,
+            "days_held": days_held,
+            "conviction_score": buy.conviction_score,
+            "ticker": ticker,
+            "is_open": True
+        })
+    
+    return completed_trades, open_positions
+
 @app.get("/strategies/{slug}")
 def strategy(slug: str, request: Request, session: Session = Depends(get_session)):
     strategy = session.exec(
@@ -192,11 +290,18 @@ def strategy(slug: str, request: Request, session: Session = Depends(get_session
             "cumulative_return": round((cumulative - 1) * 100, 2)
         })
     
+    # Get strategy transactions with company information
     strategy_transactions = session.exec(
         select(StrategyTransaction)
         .where(StrategyTransaction.id_strategy == strategy.id_strategy)
     ).all()
-
+    
+    # Match buy/sell transactions to create complete trades
+    completed_trades, open_positions = match_transactions(strategy_transactions)
+    
+    # Rendre la fonction format_date_fr disponible dans les templates
+    templates.env.globals["format_date_fr"] = format_date_fr
+    
     return templates.TemplateResponse(
         "strategy.html",
         {
@@ -204,6 +309,8 @@ def strategy(slug: str, request: Request, session: Session = Depends(get_session
             "strategy": strategy,
             "strategy_returns": strategy_chart_data,
             "cac40": cac40_chart_data,
-            "strategy_transactions": strategy_transactions
+            "strategy_transactions": strategy_transactions,
+            "completed_trades": completed_trades,
+            "open_positions": open_positions
         }
     )
