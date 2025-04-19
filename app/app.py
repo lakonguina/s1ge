@@ -1,15 +1,15 @@
 from fastapi import Depends, FastAPI, Request
-from sqlmodel import create_engine, Session, select, join
+from sqlmodel import create_engine, Session, select
 from database.model import StrategyReturn, Strategy, StrategyTransaction, StrategyTransactionNature
-from database.model import Company, Transaction
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from babel.dates import format_date
 import os
 from pathlib import Path
-from datetime import datetime, timedelta, date
-import locale
-import calendar
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def format_date_fr(date_obj):
     """
@@ -50,7 +50,7 @@ BASE_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 
 static_dir = os.path.join(BASE_DIR, "static")
-engine = create_engine("postgresql://dinitie:dinitie@postgres:5432/dinitie")
+engine = create_engine(os.getenv("POSTGRES_URL"))
 
 def get_session():
     with Session(engine) as session:
