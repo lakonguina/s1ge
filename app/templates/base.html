@@ -30,15 +30,31 @@
         color: white;
     }
 
+    .bg-black:hover {
+        background-color: #000000;
+        color: white;
+    }
+
     .bg-outline-black {
         border-color: #000000;
         color: #000000;
+    }
+
+    .bg-outline-black:hover {
+        background-color: #000000;
+        color: white;
     }
 
     .bg-green {
         background-color: #57D7BA;
         color: white;
     }
+
+    .bg-green:hover {
+        background-color: #57D7BA;
+        color: white;
+    }
+
 
     .text-green {
         color: #57D7BA;
@@ -76,15 +92,16 @@
 
     .card-container-with-scroll {
         height: 400px;
-        overflow:scroll;
-        overflow-x:hidden;
+        overflow: scroll;
+        overflow-x: hidden;
     }
-    
+
     /* Prevent table headers from wrapping */
-    th {
+    th,
+    td {
         white-space: nowrap;
     }
-    
+
     /* Make sure tables take full width */
     .table {
         width: 100%;
@@ -98,9 +115,15 @@
                 <img src="{{ url_for('static', path='/logo.png') }}" alt="Dinitie" class="navbar-brand"
                     style="width: 100px;">
             </a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
-                aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
             </button>
             <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
                 <ul class="navbar-nav me-auto ms-auto mb-2 mb-lg-0">
@@ -123,6 +146,22 @@
         </div>
     </nav>
     {% block content %}{% endblock %}
+    <section>
+        <div class="container bg-light p-5">
+            <h4>Rejoins la newsletter des investisseurs intelligents</h4>
+            <p>
+                Tu recevras chaque semaine un email avec les dernières stratégies et les meilleures idées d'investissement.
+            </p>
+            <div class="d-flex">
+                <div class="w-50">
+                    <input type="text" class="form-control rounded-0" placeholder="Email" class="w-50">
+                </div>
+                <div class="w-50">
+                    <button class="btn bg-black">Commencer</button>
+                </div>
+            </div>
+        </div>
+    </section>
     <footer class="bg-light py-5">
         <div class="container">
             <p><strong>s1ge</strong></p>

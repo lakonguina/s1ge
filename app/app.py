@@ -7,13 +7,43 @@ from fastapi.templating import Jinja2Templates
 from babel.dates import format_date
 import os
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import locale
+import calendar
 
 def format_date_fr(date_obj):
+    """
+    Format a date object to a French date string.
+    Handles various date formats including strings, dictionaries, and datetime objects.
+    """
+    if date_obj is None:
+        return "Date inconnue"
+        
+    # Handle dictionary format (from strategy_returns)
+    if isinstance(date_obj, dict) and 'date_' in date_obj:
+        date_obj = date_obj['date_']
+    
+    # If it's a string in ISO format (YYYY-MM-DD)
     if isinstance(date_obj, str):
-        date_obj = datetime.strptime(date_obj, '%Y-%m-%d')
-    return format_date(date_obj, locale='fr')
+        try:
+            date_obj = datetime.strptime(date_obj, '%Y-%m-%d')
+        except ValueError:
+            try:
+                # Try another common format
+                date_obj = datetime.strptime(date_obj, '%d/%m/%Y')
+            except ValueError:
+                # Return the string as is if we can't parse it
+                return date_obj
+    
+    # Use babel format for consistent localization
+    try:
+        return format_date(date_obj, locale='fr')
+    except Exception as e:
+        # Fallback if babel formatting fails
+        try:
+            return date_obj.strftime("%d %B %Y").lower()
+        except:
+            return str(date_obj)
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -240,6 +270,116 @@ def match_transactions(transactions):
     
     return completed_trades, open_positions
 
+def create_weekly_view(strategy, transactions, returns):
+    """
+    Create a complete weekly view of the strategy performance,
+    including weeks without transactions.
+    
+    Parameters:
+    - strategy: The strategy object
+    - transactions: List of strategy transactions
+    - returns: List of strategy returns
+    
+    Returns a list of week objects, each containing:
+    - week_start: Start date (Sunday)
+    - week_end: End date (Saturday)
+    - transactions: List of transactions in that week (may be empty)
+    - cumulative_return: The cumulative return as of the end of that week
+    """
+    if not returns:
+        return []
+    
+    # Find start and end dates of the entire period
+    try:
+        # Try to get the first return date as start
+        first_return = min(r.date_ for r in returns if r.date_)
+        # Get either the last return date or today as the end
+        last_return = max(r.date_ for r in returns if r.date_)
+        end_date = max(last_return, datetime.now().date())
+    except (ValueError, AttributeError):
+        # If returns are empty or dates are missing, use reasonable defaults
+        end_date = datetime.now().date()
+        first_return = end_date - timedelta(days=90)  # Default to 90 days
+    
+    # Adjust start_date to the previous Sunday
+    days_since_sunday = (first_return.weekday() + 1) % 7
+    start_date = first_return - timedelta(days=days_since_sunday)
+    
+    # Adjust end_date to the next Saturday
+    days_to_saturday = (6 - end_date.weekday()) % 7
+    end_date = end_date + timedelta(days=days_to_saturday)
+    
+    # Group transactions by week
+    tx_by_date = {}
+    for tx in transactions:
+        if not tx.date_:
+            continue
+        tx_by_date.setdefault(tx.date_, []).append(tx)
+    
+    # Calculate cumulative returns by date
+    cumulative_by_date = {}
+    cumulative = 1.0
+    sorted_returns = sorted(returns, key=lambda x: x.date_)
+    for r in sorted_returns:
+        if not r.date_:
+            continue
+        cumulative *= (1 + r.return_/100)
+        cumulative_by_date[r.date_] = round((cumulative - 1) * 100, 2)
+    
+    # Generate all weeks in the period
+    weeks = []
+    current_week_start = start_date
+    
+    while current_week_start <= end_date:
+        current_week_end = current_week_start + timedelta(days=6)
+        
+        # Find all transactions in this week
+        week_transactions = []
+        current_date = current_week_start
+        while current_date <= current_week_end:
+            if current_date in tx_by_date:
+                week_transactions.extend(tx_by_date[current_date])
+            current_date += timedelta(days=1)
+        
+        # Find the latest cumulative return for this week
+        week_return = None
+        current_date = current_week_end
+        while current_date >= current_week_start:
+            if current_date in cumulative_by_date:
+                week_return = cumulative_by_date[current_date]
+                break
+            current_date -= timedelta(days=1)
+        
+        # Create the week entry
+        weeks.append({
+            "week_start": current_week_start,
+            "week_end": current_week_end,
+            "transactions": week_transactions,
+            "has_transactions": len(week_transactions) > 0,
+            "return_value": week_return
+        })
+        
+        # Move to next week
+        current_week_start += timedelta(days=7)
+    
+    return weeks
+
+def get_current_week_range():
+    """
+    Obtient la semaine actuelle (dimanche-samedi).
+    Retourne un tuple (date_début, date_fin).
+    """
+    today = datetime.now().date()
+    
+    # Calculer le début de la semaine (dimanche)
+    days_since_sunday = (today.weekday() + 1) % 7
+    week_start = today - timedelta(days=days_since_sunday)
+    
+    # Calculer la fin de la semaine (samedi)
+    week_end = week_start + timedelta(days=6)
+    
+    return (week_start, week_end)
+
 @app.get("/strategies/{slug}")
 def strategy(slug: str, request: Request, session: Session = Depends(get_session)):
     strategy = session.exec(
@@ -259,13 +399,25 @@ def strategy(slug: str, request: Request, session: Session = Depends(get_session
     
     # Create serializable data for charts
     strategy_chart_data = []
-    cumulative = 1.0
-    for r in sorted(strategy_returns, key=lambda x: x.date_):
-        cumulative *= (1 + r.return_/100)
+    
+    # Sort returns by date
+    sorted_returns = sorted(strategy_returns, key=lambda x: x.date_) if strategy_returns else []
+    
+    if not sorted_returns:
+        # Add a default point if no data is available
+        today = datetime.now().date()
         strategy_chart_data.append({
-            "date_": str(r.date_),
-            "cumulative_return": round((cumulative - 1) * 100, 2)
+            "date_": str(today),
+            "cumulative_return": 0.0
         })
+    else:
+        cumulative = 1.0
+        for r in sorted_returns:
+            cumulative *= (1 + r.return_/100)
+            strategy_chart_data.append({
+                "date_": str(r.date_),
+                "cumulative_return": round((cumulative - 1) * 100, 2)
+            })
     
     # Calculate CAC40 cumulative returns
     cac40_chart_data = []
@@ -286,7 +438,10 @@ def strategy(slug: str, request: Request, session: Session = Depends(get_session
     # Match buy/sell transactions to create complete trades
     completed_trades, open_positions = match_transactions(strategy_transactions)
     
-    # Rendre la fonction format_date_fr disponible dans les templates
+    # Obtenir la semaine actuelle
+    current_week_range = get_current_week_range()
+    
+    # Make the format_date_fr function available in templates
     templates.env.globals["format_date_fr"] = format_date_fr
     
     return templates.TemplateResponse(
@@ -298,6 +453,7 @@ def strategy(slug: str, request: Request, session: Session = Depends(get_session
             "cac40": cac40_chart_data,
             "strategy_transactions": strategy_transactions,
             "completed_trades": completed_trades,
-            "open_positions": open_positions
+            "open_positions": open_positions,
+            "current_week_range": current_week_range
         }
     )

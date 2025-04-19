@@ -9,6 +9,16 @@
     <div class="row g-5">
         <div class="col-md-6">
             <sub><strong>Performance historique face au CAC 40</strong></sub>
+            <div class="d-flex gap-2">
+                <div class="d-flex mt-2 mb-2 align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#57D7BA" stroke="#57D7BA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+                    <small class="ms-2"><strong>Stratégie</strong></small>
+                </div>
+                <div class="d-flex mt-2 mb-2 align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#FFA500" stroke="#FFA500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+                    <small class="ms-2"><strong>CAC 40</strong></small>
+                </div>
+            </div>
             <div class="chart-container">
                 {{ macros.render_chart(
                 chart_id='returnsChart',
@@ -20,7 +30,13 @@
             </div>
         </div>
         <div class="col-md-6">
-            <sub><strong>Positions Ouvertes</strong></sub>
+            <sub><strong>Positions ouvertes pour 
+                {% if current_week_range %}
+                    la semaine du {{ format_date_fr(current_week_range[0]) }} au {{ format_date_fr(current_week_range[1]) }}
+                {% else %}
+                    la période actuelle
+                {% endif %}
+            </strong></sub>
             <div class="table-responsive">
                 <table class="table table-sm mt-2">
                     <thead>
@@ -55,8 +71,8 @@
                 </table>
             </div>
         </div>
-        <div class="col-md-12">
-            <sub><strong>Transactions Complétées</strong></sub>
+        <div class="col-md-12 card-container-with-scroll">
+            <sub><strong>Transactions complétées</strong></sub>
             <div class="table-responsive">
                 <table class="table table-sm mt-2 w-100">
                     <thead>
@@ -72,7 +88,7 @@
                     </thead>
                     <tbody>
                         {% if completed_trades %}
-                        {% for trade in completed_trades %}
+                        {% for trade in completed_trades|reverse %}
                         <tr>
                             <td>{{ trade.ticker }}</td>
                             <td>{{ format_date_fr(trade.entry_date) }}</td>
