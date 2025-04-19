@@ -2,17 +2,27 @@
 {% import 'macros.html' as macros %}
 
 {% block content %}
-<div class="container">
+<div class="container my-5">
     <h1>{{ strategy.name }}</h1>
     <p>{{ strategy.description }}</p>
-    <div>
-        {{ macros.render_chart(
-            chart_id='returnsChart',
-            strategy_data=strategy_returns,
-            cac40_data=cac40,
-            strategy_name=strategy.name|safe,
-            is_overview=false
-        ) }}
+    <p><strong>Commencé le {{ strategy_returns[0]['date_'] }}</strong></p>
+    <div class="row">
+        <div class="col-md-6">
+            <sub><strong>Performance historique face au CAC 40</strong></sub>
+            <div class="chart-container">
+                {{ macros.render_chart(
+                    chart_id='returnsChart',
+                    strategy_data=strategy_returns,
+                    cac40_data=cac40,
+                    strategy_name=strategy.name|safe,
+                    is_overview=false
+                ) }}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <sub><strong>Constitution actuel du portefeuille</strong></sub>
+
+        </div>
     </div>
 </div>
 {% endblock %}

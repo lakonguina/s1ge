@@ -8,7 +8,7 @@
         investisseurs occupés.</p>
     <div class="row mt-5">
         {% for strategy in strategy_data %}
-        <div class="col-md-6 mb-4">
+        <div class="col-md-4 mb-4">
             <a href="{{ url_for('strategy', slug=strategy.strategy.slug) }}" class="link-underline link-underline-opacity-0 text-body-emphasis strategy-card">
                 <div class="p-3 bg-light h-100">
                     <h5>{{ strategy.strategy.name }}</h5>
