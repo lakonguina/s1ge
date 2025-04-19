@@ -121,6 +121,7 @@ class Strategy(SQLModel, table=True):
     id_strategy: int | None = Field(default=None, primary_key=True)
     name: str = Field(default=None)
     slug: str = Field(default=None)
+    description: str | None = Field(default=None)
 
     strategy_transactions: list["StrategyTransaction"] = Relationship(back_populates="strategy")
     strategy_returns: list["StrategyReturn"] = Relationship(back_populates="strategy")
