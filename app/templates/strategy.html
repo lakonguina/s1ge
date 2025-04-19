@@ -1,69 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dinitie</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-</head>
-<body>
-    <canvas id="returnsChart" width="800" height="400"></canvas>
+{% extends "base.html" %}
+{% import 'macros.html' as macros %}
 
-    <script>
-        const strategyData = [
-            {% for return in strategy_returns %}
-                { date: "{{ return.date_ }}", value: {{ return.cumulative_return }} },
-            {% endfor %}
-        ];
-        const cac40Data = [
-            {% for return in cac40 %}
-                { date: "{{ return.date_ }}", value: {{ return.cumulative_return }} },
-            {% endfor %}
-        ];
-
-        const allDates = [...new Set([
-            ...strategyData.map(d => d.date),
-            ...cac40Data.map(d => d.date)
-        ])].sort();
-
-        const strategyReturns = allDates.map(date => {
-            const entry = strategyData.find(d => d.date === date);
-            return entry ? entry.value : null;
-        });
-        const cac40Returns = allDates.map(date => {
-            const entry = cac40Data.find(d => d.date === date);
-            return entry ? entry.value : null;
-        });
-
-        const ctx = document.getElementById('returnsChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: allDates,
-                datasets: [
-                    {
-                        label: '{{ strategy.name }}',
-                        data: strategyReturns,
-                        borderColor: 'blue',
-                        fill: false,
-                        tension: 0.1
-                    },
-                    {
-                        label: 'CAC 40',
-                        data: cac40Returns,
-                        borderColor: 'orange',
-                        fill: false,
-                        tension: 0.1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: { title: { display: true, text: 'Date' } },
-                    y: { title: { display: true, text: 'Cumulative Return' } }
-                },
-                plugins: { legend: { display: true } }
-            }
-        });
-    </script>
-</body>
-</html>
+{% block content %}
+<div class="container">
+    <h1>{{ strategy.name }}</h1>
+    <p>{{ strategy.description }}</p>
+    <div>
+        {{ macros.render_chart(
+            chart_id='returnsChart',
+            strategy_data=strategy_returns,
+            cac40_data=cac40,
+            strategy_name=strategy.name|safe,
+            is_overview=false
+        ) }}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% macro render_chart(chart_id, strategy_data, cac40_data, strategy_name, is_overview=false, show_cac40=true) %}
+<canvas id="{{ chart_id }}" {% if is_overview %}class="overview-chart"{% endif %}></canvas>
+
+<script>
+    (function() {
+        const strategyData = {{ strategy_data|tojson }};
+        const cac40Data = {{ cac40_data|tojson }};
+        const strategyName = "{{ strategy_name }}";
+        const isOverview = {{ 'true' if is_overview else 'false' }};
+        const showCac40 = {{ 'true' if show_cac40 else 'false' }};
+
+        if (strategyData.length === 0) {
+            console.warn("No data available for chart:", "{{ chart_id }}");
+            return;
+        }
+
+        let processedData = strategyData;
+        if (strategyData.length === 1) {
+            processedData = [
+                {...strategyData[0]},
+                {...strategyData[0], date_: strategyData[0].date_ + " +1d"}
+            ];
+        }
+
+        const allDates = [...new Set([
+            ...processedData.map(d => d.date_),
+            ...(showCac40 ? cac40Data.map(d => d.date_) : [])
+        ])].sort();
+
+        const skipFactor = isOverview ? Math.max(1, Math.floor(allDates.length / 10)) : 1;
+        const filteredDates = isOverview 
+            ? allDates.filter((_, i) => i % skipFactor === 0 || i === allDates.length - 1) 
+            : allDates;
+
+        const strategyReturns = filteredDates.map(date => {
+            const entry = processedData.find(d => d.date_ === date);
+            return entry ? entry.cumulative_return : null;
+        });
+        
+        const cac40Returns = showCac40 ? filteredDates.map(date => {
+            const entry = cac40Data.find(d => d.date_ === date);
+            return entry ? entry.cumulative_return : null;
+        }) : [];
+
+        const ctx = document.getElementById('{{ chart_id }}').getContext('2d');
+        
+        const datasets = [
+            {
+                label: strategyName,
+                data: strategyReturns,
+                borderColor: '#57D7BA',
+                backgroundColor: 'rgba(87, 215, 186, 0.1)',
+                fill: isOverview,
+                pointRadius: 0,
+                borderWidth: 2
+            }
+        ];
+        
+        if (showCac40) {
+            datasets.push({
+                label: 'CAC 40',
+                data: cac40Returns,
+                borderColor: 'orange',
+                fill: false,
+                pointRadius: 0,
+                borderWidth: 2
+            });
+        }
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: filteredDates,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                animation: {
+                    duration: 0
+                },
+                scales: {
+                    x: { 
+                        display: false,
+                        title: { display: false, text: 'Date' }
+                    },
+                    y: { 
+                        display: false,
+                        title: { display: false, text: 'Cumulative Return' }
+                    }
+                },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: { 
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (context.parsed.y !== null) {
+                                    label += " (" + context.parsed.y.toFixed(2) + "%)";
+                                }
+                                return label;
+                            },
+                            labelTextColor: function(context) {
+                                return context.dataset.borderColor;
+                            }
+                        },
+                        bodyFont: {
+                            weight: 'bold'
+                        },
+                        cornerRadius: 1,
+                        padding: 8,
+                        caretSize: 0
+                    }
+                },
+                elements: {
+                    line: {
+                        borderWidth: isOverview ? 2 : 1
+                    }
+                }
+            }
+        });
+    })();
+</script>
+{% endmacro %} 

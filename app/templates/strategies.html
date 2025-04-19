@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import 'macros.html' as macros %}
 
 {% block content %}
 <section class="container">
@@ -7,32 +8,40 @@
         investisseurs occupés.</p>
     <div class="row mt-5">
         {% for strategy in strategy_data %}
-        <a href="{{ url_for('strategy', slug=strategy.strategy.slug) }}" class="link-underline link-underline-opacity-0 text-body-emphasis">
-            <div class="col-md-5 p-3 bg-light">
-                <h5>{{ strategy.strategy.name }}</h5>
-                <p>{{ strategy.strategy.description }}</p>
-                <div class="row">
-                    <div class="col-md-4">
-                        <strong>{{ strategy.annual_return }}%</strong>
-                        <div>
-                            <sub>Ret. annuel</sub>
-                        </div>
+        <div class="col-md-6 mb-4">
+            <a href="{{ url_for('strategy', slug=strategy.strategy.slug) }}" class="link-underline link-underline-opacity-0 text-body-emphasis strategy-card">
+                <div class="p-3 bg-light h-100">
+                    <h5>{{ strategy.strategy.name }}</h5>
+                    <p>{{ strategy.strategy.description }}</p>
+                    
+                    <div>
+                        {{ macros.render_chart(
+                            chart_id='chart-' + strategy.strategy.slug,
+                            strategy_data=strategy.returns,
+                            cac40_data=[],
+                            strategy_name=strategy.strategy.name|safe,
+                            is_overview=true,
+                            show_cac40=false
+                        ) }}
                     </div>
-                    <div class="col-md-4">
-                        <strong>{{ strategy.total_return }}%</strong>
-                        <div>
-                            <sub>Ret. total</sub>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <strong>{{ strategy.annual_return }}%</strong>
+                            <div><sub>Ret. annuel</sub></div>
                         </div>
+                        <div class="col-md-4">
+                            <strong>{{ strategy.total_return }}%</strong>
+                            <div><sub>Ret. total</sub></div>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>{{ strategy.max_drawdown }}%</strong>
+                            <div><sub>Pertes max.</sub></div>
+                        </div>  
                     </div>
-                    <div class="col-md-4">
-                        <strong>{{ strategy.max_drawdown }}%</strong>
-                        <div>
-                            <sub>Pertes max.</sub>
-                        </div>
-                    </div>  
                 </div>
-            </div>
-        </a>
+            </a>
+        </div>
         {% endfor %}
     </div>
 </section>
