@@ -192,12 +192,18 @@ def strategy(slug: str, request: Request, session: Session = Depends(get_session
             "cumulative_return": round((cumulative - 1) * 100, 2)
         })
     
+    strategy_transactions = session.exec(
+        select(StrategyTransaction)
+        .where(StrategyTransaction.id_strategy == strategy.id_strategy)
+    ).all()
+
     return templates.TemplateResponse(
         "strategy.html",
         {
             "request": request,
             "strategy": strategy,
             "strategy_returns": strategy_chart_data,
-            "cac40": cac40_chart_data
+            "cac40": cac40_chart_data,
+            "strategy_transactions": strategy_transactions
         }
     )

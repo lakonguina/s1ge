@@ -21,7 +21,28 @@
         </div>
         <div class="col-md-6">
             <sub><strong>Constitution actuel du portefeuille</strong></sub>
-
+        </div>
+        <div class="col-md-6">
+            <sub><strong>Transactions de la stratégie</strong></sub>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>Conviction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tx in strategy_transactions %}
+                    <tr>
+                        <td>{{ tx.date_ }}</td>
+                        <td class="text-{{ 'success' if tx.nature == 'BUY' else 'danger' }}">{{ "Achat" if tx.nature == "BUY" else "Vente" }}</td>
+                        <td>{{ tx.company.name }}</td>
+                        <td>{{ tx.conviction_score }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

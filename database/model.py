@@ -14,6 +14,7 @@ class Company(SQLModel, table=True):
     quotes: list["Quote"] = Relationship(back_populates="company")
     persons: list["Person"] = Relationship(back_populates="companies")
     transactions: list["Transaction"] = Relationship(back_populates="company")
+    strategy_transactions: list["StrategyTransaction"] = Relationship(back_populates="company")
 
 
 class Declaration(SQLModel, table=True):
@@ -136,11 +137,14 @@ class StrategyTransaction(SQLModel, table=True):
     __tablename__ = "strategy_transactions"
     id_strategy_transaction: int | None = Field(default=None, primary_key=True)
     id_strategy: int = Field(foreign_key="strategies.id_strategy")
+    id_company: int = Field(foreign_key="companies.id_company")
     nature: StrategyTransactionNature | None = Field(default=None)
     date_: date | None = Field(default=None)
     conviction_score: float | None = Field(default=None)
+    return_: float | None = Field(default=None)
 
     strategy: Strategy = Relationship(back_populates="strategy_transactions")
+    company: Company = Relationship(back_populates="strategy_transactions")
 
 
 class StrategyReturn(SQLModel, table=True):
