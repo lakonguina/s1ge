@@ -2,11 +2,6 @@
 {% import 'macros.html' as macros %}
 
 {% block content %}
-<ul>
-    {% for return in strategy_returns %}
-        <li>{{ return }}</li>
-    {% endfor %}
-</ul>
 <div class="container my-4">
     <h1>{{ strategy.name }}</h1>
     <p>{{ strategy.description }}</p>
