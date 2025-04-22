@@ -143,7 +143,7 @@ def calculate_total_return(returns):
 def strategies(request: Request, session: Session = Depends(get_session)):
     strategies = session.exec(
         select(Strategy)
-        .where(Strategy.id_strategy != 2)
+        .where(Strategy.slug != "cac-40")
     ).all()
     
     strategy_data = []
@@ -394,7 +394,8 @@ def strategy(slug: str, request: Request, session: Session = Depends(get_session
     
     cac40_returns = session.exec(
         select(StrategyReturn)
-        .where(StrategyReturn.id_strategy == 2)
+        .join(Strategy)
+        .where(Strategy.slug == "cac-40")
     ).all()
     
     # Create serializable data for charts
@@ -403,6 +404,7 @@ def strategy(slug: str, request: Request, session: Session = Depends(get_session
     # Sort returns by date
     sorted_returns = sorted(strategy_returns, key=lambda x: x.date_) if strategy_returns else []
     
+    """
     if not sorted_returns:
         # Add a default point if no data is available
         today = datetime.now().date()
@@ -418,6 +420,12 @@ def strategy(slug: str, request: Request, session: Session = Depends(get_session
                 "date_": str(r.date_),
                 "cumulative_return": round((cumulative - 1) * 100, 2)
             })
+    """
+    for r in sorted_returns:
+        strategy_chart_data.append({
+            "date_": str(r.date_),
+            "cumulative_return": r.cumulative_return
+        })
     
     # Calculate CAC40 cumulative returns
     cac40_chart_data = []
@@ -443,7 +451,7 @@ def strategy(slug: str, request: Request, session: Session = Depends(get_session
     
     # Make the format_date_fr function available in templates
     templates.env.globals["format_date_fr"] = format_date_fr
-    
+
     return templates.TemplateResponse(
         "strategy.html",
         {

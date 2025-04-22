@@ -22,7 +22,7 @@ def get_latest_transaction_date() -> datetime.date:
         latest_declaration_date = session.exec(
             select(func.max(Declaration.date_))).first()
         if latest_declaration_date:
-            return latest_declaration_date
+            return latest_declaration_date - timedelta(days=1)
         # If no data at all, start from beginning of 2019
         return datetime(2017, 1, 1).date()
 
@@ -91,7 +91,7 @@ def get_declarations() -> None:
                 document_content = get_document(document['path'])
                 with Session(engine) as session:
                     extractor(document_content, session)
-                time.sleep(0.5)
+                time.sleep(2)
         # Move to the next year
         start_date = end_datetime.date()
     print("Fetched all declarations.")

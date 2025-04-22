@@ -100,7 +100,8 @@
                             label: function(context) {
                                 let label = context.dataset.label || '';
                                 if (context.parsed.y !== null) {
-                                    label += " (" + context.parsed.y.toFixed(2) + "%)";
+                                    console.log(context)
+                                    label += " (" + context.parsed.y + "%)";
                                 }
                                 return label;
                             },
